@@ -14,7 +14,6 @@ export class HomePage {
 
   public productos: Producto[];
   public producto: Producto;
-  public total: number;
 
   constructor(private productoService: ProductoService, private router: Router) {
     this.productos =  this.productoService.getProductos();
@@ -41,7 +40,8 @@ export class HomePage {
   }
 
   public addProductoCarrito(producto: Producto){
-    this.total =  this.productoService.addProductoCarrito(producto);
+    console.log(producto);
+    this.productoService.addProductoCarrito(producto);
   }
 
 }

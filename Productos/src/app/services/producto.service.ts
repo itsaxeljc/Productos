@@ -32,7 +32,9 @@ export class ProductoService {
         description: "Producto 4",
         precio: 15,
         id: "4"
-      },]
+      },];
+      this.carrito = [];
+      this.total = 0;
   }
 
   public getProductos(): Producto[]{
@@ -47,9 +49,9 @@ export class ProductoService {
     this.products.splice(pos, 1);
   }
 
-  public addProductoCarrito(producto: Producto): number{
+  public addProductoCarrito(producto: Producto):number{
     this.carrito.push(producto);
-    this.total = this.total +  producto.precio;
+    this.total = this.total + producto.precio;
     return this.total;
   }
 
@@ -61,6 +63,10 @@ export class ProductoService {
 
   public getCarrito(): Producto[]{
     return this.carrito;
+  }
+
+  public getTotal(): number{
+    return this.total;
   }
 
   public getProductoById (id: string): Producto{

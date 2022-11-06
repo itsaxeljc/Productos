@@ -16,19 +16,16 @@ export class ViewCarritoPage implements OnInit {
   public producto: Producto;
   public total: number;
 
-  constructor(private productoService: ProductoService,  private router: Router) { }
+  constructor(private productoService: ProductoService,  private router: Router) { 
+  }
 
   ngOnInit() {
     this.productos = this.productoService.getCarrito();
+    this.total = this.productoService.getTotal();
   }
 
   public removeProducto(pos: number){
-    this. total = this.productoService.removeProductoCarrito(pos);
-    this.productos = this.productoService.getCarrito();
-  }
-
-  public addProducto(producto: Producto){
-    this.total =  this.productoService.addProductoCarrito(producto);
+    this.total = this.productoService.removeProductoCarrito(pos);
     this.productos = this.productoService.getCarrito();
   }
 
