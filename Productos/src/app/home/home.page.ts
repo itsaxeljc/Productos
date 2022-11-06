@@ -14,6 +14,7 @@ export class HomePage {
 
   public productos: Producto[];
   public producto: Producto;
+  public total: number;
 
   constructor(private productoService: ProductoService, private router: Router) {
     this.productos =  this.productoService.getProductos();
@@ -25,14 +26,22 @@ export class HomePage {
   }
 
   public getProductoById(id_producto: string){
-    this.router.navigate(['/view-producto'], { 
+    this.router.navigate(['/view-product'], { 
       queryParams: {id: id_producto}
     });
+  }
+
+  public navigateCarrito(){
+    this.router.navigate(['/view-carrito']);
   }
 
   public addProducto(){
     this.productoService.addProducto(this.producto);
     this.productos = this.productoService.getProductos();
+  }
+
+  public addProductoCarrito(producto: Producto){
+    this.total =  this.productoService.addProductoCarrito(producto);
   }
 
 }

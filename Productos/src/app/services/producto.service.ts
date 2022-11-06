@@ -11,13 +11,13 @@ export class ProductoService {
   private total: number;
 
   constructor() { 
-    this.products =  [{
-      foto: "https://picsum.photos/id/310/500/500",
-      description: "Producto 1",
-      precio: 25,
-      id: "1"
-    },
-    {
+      this.products =  [{
+        foto: "https://picsum.photos/id/310/500/500",
+        description: "Producto 1",
+        precio: 25,
+        id: "1"
+      },
+      {
         foto: "https://picsum.photos/id/317/500/500",
         description: "Producto 2",
         precio: 35,
