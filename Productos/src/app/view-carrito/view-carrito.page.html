@@ -4,7 +4,7 @@
       <ion-back-button>
       </ion-back-button>
     </ion-buttons>
-    <ion-title>Carrito, Total: ${{total}}</ion-title>
+    <ion-title>Carrito, Total: {{total|currency}}</ion-title>
   </ion-toolbar>
 </ion-header>
 
@@ -21,7 +21,7 @@
               {{item.nombre}}
             </ion-label>
             <ion-label>
-              ${{item.precio}}
+              {{item.precio|currency}}
             </ion-label>
           </ion-item>
           <ion-item-options side="end" (ionSwipe)="removeProducto(i)">
