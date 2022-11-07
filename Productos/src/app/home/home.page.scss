@@ -11,6 +11,15 @@ img {
   align-items: center;
   width: 250px;
   height: 250px;
+  @media (max-width: 650px){
+    height: 20vh;
+    width: 20vh;
+  }
+
+  @media (max-width: 480px){
+    height: 10vh;
+    width: 10vh;
+  }
 }
 #container strong {
   font-size: 20px;

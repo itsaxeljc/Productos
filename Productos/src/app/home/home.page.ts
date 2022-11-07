@@ -89,6 +89,26 @@ export class HomePage {
     await alert.present();
   }
 
+  public async error(){
+    
+    const alert = await this.alertController.create({
+      header: 'ALERTA',
+      subHeader: 'Revise que los campos estén completos',
+      message: 'Uno o más campos no son correctos, revise por favor',
+      buttons: [
+        {
+          text: 'Aceptar',
+          role: 'confirm',
+          handler: () => {
+            this.alertAddProduct();
+          }
+        }
+      ]
+    });
+
+    await alert.present();
+  }
+
   async alertAddProduct() {
     const alert = await this.alertController.create({
       header: 'Ingrese la información de su producto',
@@ -120,15 +140,19 @@ export class HomePage {
       {
         text: 'Aceptar',
         handler: (alertData) => {
-          let i = this.productos.length+1;
-          this.producto = {
-            foto: alertData.foto,
-            nombre: alertData.description,
-            description: alertData.description,
-            precio: parseFloat(alertData.precio),
-            id: i.toString(),
+          if(alertData.foto == "" || alertData.description == "" || alertData.precio == ""){
+            this.error();
+          } else {
+            let i = this.productos.length+1;
+            this.producto = {
+              foto: alertData.foto,
+              nombre: alertData.description,
+              description: alertData.description,
+              precio: parseFloat(alertData.precio),
+              id: i.toString(),
+            }
+            this.productoService.addProducto(this.producto)
           }
-          this.productoService.addProducto(this.producto)
         }
       }],
     });
