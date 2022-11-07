@@ -21,9 +21,34 @@ export class HomePage {
     this.productos =  this.productoService.getProductos();
   }
 
-  public removeProducto(pos: number){
-    this.productoService.removeProducto(pos);
-    this.productos = this.productoService.getProductos();
+  public async removeProducto(pos: number){
+
+    const alert = await this.alertController.create({
+      header: 'ALERTA',
+      subHeader: '¿Estás seguro que deseas eliminar el producto?',
+      message: 'Al eliminar no se podra visualizar el producto',
+      buttons: [
+        {
+          text: 'Cancelar',
+          role: 'cancel',
+          handler: () => {
+
+          }
+        },
+        {
+          text: 'Aceptar',
+          role: 'confirm',
+          handler: () => {
+            
+            this.productoService.removeProducto(pos);
+            this.productos = this.productoService.getProductos();
+          }
+        }
+      ]
+    });
+
+    await alert.present();
+
   }
 
   public getProductoById(id_producto: string){
@@ -41,9 +66,27 @@ export class HomePage {
     this.productos = this.productoService.getProductos();
   }
 
-  public addProductoCarrito(producto: Producto){
-    console.log(producto);
-    this.productoService.addProductoCarrito(producto);
+  public async addProductoCarrito(producto: Producto){
+    
+    const alert = await this.alertController.create({
+      header: 'ALERTA',
+      subHeader: 'Se agrego correctamente el producto al carrito',
+      message: 'Podrás ver todos los productos agregados en carrito',
+      buttons: [
+        {
+          text: 'Aceptar',
+          role: 'confirm',
+          handler: () => {
+            
+            console.log(producto);
+            this.productoService.addProductoCarrito(producto);
+            
+          }
+        }
+      ]
+    });
+
+    await alert.present();
   }
 
   async alertAddProduct() {
@@ -80,6 +123,7 @@ export class HomePage {
           let i = this.productos.length+1;
           this.producto = {
             foto: alertData.foto,
+            nombre: alertData.description,
             description: alertData.description,
             precio: parseFloat(alertData.precio),
             id: i.toString(),

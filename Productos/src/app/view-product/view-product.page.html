@@ -4,20 +4,20 @@
       <ion-back-button>
       </ion-back-button>
     </ion-buttons>
-    <ion-title>Detalle de {{producto.description}}</ion-title>
+    <ion-title>Detalle de {{producto.nombre}}</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
-  <ion-card>
-    <img [src]="producto.foto"/>
+  <ion-card class="card">
+    
+    <ion-img [src]="producto.foto" class="img"></ion-img>
     <ion-card-header>
-      <ion-card-title>
-          <ion-label>{{producto.description}}</ion-label>
-      </ion-card-title>
-      <ion-card-subtitle>
-        <ion-label>${{producto.precio}}</ion-label>
-      </ion-card-subtitle>
+      <ion-card-title>{{producto.nombre}}</ion-card-title>
     </ion-card-header>
+  
+    <ion-card-content>
+      {{producto.description}}
+    </ion-card-content>
   </ion-card>
 </ion-content>

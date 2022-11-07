@@ -1,0 +1,14 @@
+/* iOS places the subtitle above the title */
+ion-card-header.ios {
+    display: flex;
+    flex-flow: column-reverse;
+  }
+.img {
+    align-items: center;
+    width: 300px;
+    height: 400px;
+}
+
+.card{
+  align-items: center;
+}

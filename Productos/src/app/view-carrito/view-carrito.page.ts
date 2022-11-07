@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Producto } from '../models/producto';
 import { ProductoService } from '../services/producto.service';
+import { AlertController } from '@ionic/angular';
 
 //Routes
 import { Router } from '@angular/router'; 
@@ -16,7 +17,8 @@ export class ViewCarritoPage implements OnInit {
   public producto: Producto;
   public total: number;
 
-  constructor(private productoService: ProductoService,  private router: Router) { 
+  constructor(private productoService: ProductoService,  private router: Router,
+    private alertController:AlertController ) { 
   }
 
   ngOnInit() {
@@ -24,9 +26,35 @@ export class ViewCarritoPage implements OnInit {
     this.total = this.productoService.getTotal();
   }
 
-  public removeProducto(pos: number){
-    this.total = this.productoService.removeProductoCarrito(pos);
-    this.productos = this.productoService.getCarrito();
+  public async removeProducto(pos: number){
+    
+    const alert = await this.alertController.create({
+      header: 'ALERTA',
+      subHeader: '¿Estás seguro que deseas eliminar el producto?',
+      message: 'Al eliminar no se podra visualizar el producto',
+      buttons: [
+        {
+          text: 'Cancelar',
+          role: 'cancel',
+          handler: () => {
+
+          }
+        },
+        {
+          text: 'Aceptar',
+          role: 'confirm',
+          handler: () => {
+            
+            this.total = this.productoService.removeProductoCarrito(pos);
+            this.productos = this.productoService.getCarrito();
+            
+          }
+        }
+      ]
+    });
+
+    await alert.present();
+
   }
 
 }
