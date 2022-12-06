@@ -5,6 +5,7 @@ import { AlertController } from '@ionic/angular';
 
 //Routes
 import { Router } from '@angular/router'; 
+import { Total } from '../models/total';
 
 @Component({
   selector: 'app-home',
@@ -15,14 +16,19 @@ export class HomePage {
 
   public productos: Producto[];
   public producto: Producto;
+  public total: Total;
 
   constructor(private productoService: ProductoService, private router: Router,
     private alertController: AlertController) {
-    this.productos =  this.productoService.getProductos();
+    this.productoService.getProductos().subscribe( res => {
+      this.productos = res;
+    })
+    this.productoService.getTotal().subscribe( res => {
+      this.total = res[0];
+    });
   }
 
-  public async removeProducto(pos: number){
-
+  public async removeProducto(id: string){
     const alert = await this.alertController.create({
       header: 'ALERTA',
       subHeader: '¿Estás seguro que deseas eliminar el producto?',
@@ -39,9 +45,7 @@ export class HomePage {
           text: 'Aceptar',
           role: 'confirm',
           handler: () => {
-            
-            this.productoService.removeProducto(pos);
-            this.productos = this.productoService.getProductos();
+            this.productoService.removeProducto(id);
           }
         }
       ]
@@ -63,11 +67,9 @@ export class HomePage {
 
   public addProducto(){
     this.productoService.addProducto(this.producto);
-    this.productos = this.productoService.getProductos();
   }
 
   public async addProductoCarrito(producto: Producto){
-    
     const alert = await this.alertController.create({
       header: 'ALERTA',
       subHeader: 'Se agrego correctamente el producto al carrito',
@@ -77,10 +79,13 @@ export class HomePage {
           text: 'Aceptar',
           role: 'confirm',
           handler: () => {
-            
-            console.log(producto);
-            this.productoService.addProductoCarrito(producto);
-            
+            let prod = {
+              nombre: producto.nombre,
+              foto: producto.foto,
+              precio: producto.precio
+            }
+            this.productoService.addProductoCarrito(prod);
+            this.productoService.updateTotal(producto.precio, this.total);
           }
         }
       ]
@@ -90,7 +95,6 @@ export class HomePage {
   }
 
   public async error(){
-    
     const alert = await this.alertController.create({
       header: 'ALERTA',
       subHeader: 'Revise que los campos estén completos',
@@ -113,6 +117,11 @@ export class HomePage {
     const alert = await this.alertController.create({
       header: 'Ingrese la información de su producto',
       inputs: [
+        {
+          name: 'name',
+          type: 'text',
+          placeholder: 'Nombre',
+        },
         {
           name: 'description',
           type: 'text',
@@ -143,13 +152,11 @@ export class HomePage {
           if(alertData.foto == "" || alertData.description == "" || alertData.precio == ""){
             this.error();
           } else {
-            let i = this.productos.length+1;
             this.producto = {
               foto: alertData.foto,
-              nombre: alertData.description,
+              nombre: alertData.name,
               description: alertData.description,
               precio: parseFloat(alertData.precio),
-              id: i.toString(),
             }
             this.productoService.addProducto(this.producto)
           }

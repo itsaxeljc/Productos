@@ -1,5 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Producto } from '../models/producto';
+import { Total } from '../models/total';
+import { map } from 'rxjs/operators';
+import { AngularFirestore } from '@angular/fire/compat/firestore';
 
 @Injectable({
   providedIn: 'root'
@@ -8,9 +11,9 @@ export class ProductoService {
 
   private products: Producto[];
   private carrito: Producto[];
-  private total: number;
+  private total: Total;
 
-  constructor() { 
+  constructor(private firestore: AngularFirestore) { 
       this.products =  [{
         foto: "https://http2.mlstatic.com/D_NQ_NP_2X_771415-MLA44492818319_012021-V.webp",
         nombre: "XBOX ONE SERIES S",
@@ -20,7 +23,7 @@ export class ProductoService {
       },
       {
         foto: "https://i.linio.com/p/3eb425730a8af250d919ab62f0d09b49.jpg",
-        nombre:"Monitor Acteck 933858 ",
+        nombre:"Monitor Acteck 933858",
         description: "Características: Diagonal de la pantalla: 54,6 cm (21.5 pul), Tipo HD: Full HD, Resolución: 1920 x 1080 Pixeles, Tiempo de respuesta: 8 ms, Velocidad de actualización: 75 Hz, Cantidad de puertos HDMI: 1, Color del producto: Negro",
         precio: 2199,
         id: "2"
@@ -38,49 +41,72 @@ export class ProductoService {
         id: "4"
       },];
       this.carrito = [];
-      this.total = 0;
   }
 
-  public getProductos(): Producto[]{
-    return this.products;
+  public getProductos(){
+    return this.firestore.collection('productos').snapshotChanges().pipe(
+      map(actions => {
+        return actions.map(a => {
+          const data = a.payload.doc.data() as Producto;
+          const id = a.payload.doc.id;
+          return { id, ...data };
+        });
+      })
+    )
   }
 
   public addProducto(producto: Producto){
-    this.products.push(producto);
+    this.firestore.collection('productos').add(producto);
   }
 
-  public removeProducto(pos: number){
-    this.products.splice(pos, 1);
+  public removeProducto(id: string){
+    this.firestore.collection('productos').doc(id).delete();
   }
 
-  public addProductoCarrito(producto: Producto):number{
-    this.carrito.push(producto);
-    this.total = this.total + producto.precio;
-    return this.total;
+  public addProductoCarrito(producto: Producto){
+    this.firestore.collection('carrito').add(producto);
   }
 
-  public removeProductoCarrito(index: number): number{
-    this.total =  this.total - this.carrito[index].precio;
-    this.carrito.splice(index, 1);
-    return this.total;
+  public removeProductoCarrito(id: string){
+    this.firestore.collection('carrito').doc(id).delete();
   }
 
-  public getCarrito(): Producto[]{
-    return this.carrito;
+  public getCarrito(){
+    return this.firestore.collection('carrito').snapshotChanges().pipe(
+      map(actions => {
+        return actions.map(a => {
+          const data = a.payload.doc.data() as Producto;
+          const id = a.payload.doc.id;
+          return { id, ...data };
+        });
+      })
+    )
   }
 
-  public getTotal(): number{
-    return this.total;
+  public getTotal(){
+    return this.firestore.collection('total').snapshotChanges().pipe(
+      map(actions => {
+        return actions.map(a => {
+          const data = a.payload.doc.data() as Total;
+          const id = a.payload.doc.id;
+          return { id, ...data };
+        })
+      })
+    )
   }
 
-  public getProductoById (id: string): Producto{
-    let item: Producto;
-    item = this.products.find(
-      (product)=> { 
-        return product.id === id;
-      }
-    );
-    return item;
+  public updateTotal(price: number, total:Total){
+    total.total += price;
+    this.firestore.doc('total/jYZoBxVk4qHH2fs7XHho').update(total);
   }
 
+  public getProductoById (id: string){
+    let result = this.firestore.collection('carrito').doc(id).valueChanges();
+    return result;
+  }
+
+  public productDetail (id: string){
+    let result = this.firestore.collection('productos').doc(id).valueChanges();
+    return result;
+  }
 }
