@@ -1,5 +1,8 @@
+import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
 import { Producto } from '../models/producto';
+import { map } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -10,7 +13,7 @@ export class ProductoService {
   private carrito: Producto[];
   private total: number;
 
-  constructor() { 
+  constructor(private firestore: AngularFirestore) { 
       this.products =  [{
         foto: "https://http2.mlstatic.com/D_NQ_NP_2X_771415-MLA44492818319_012021-V.webp",
         nombre: "XBOX ONE SERIES S",
@@ -41,46 +44,64 @@ export class ProductoService {
       this.total = 0;
   }
 
-  public getProductos(): Producto[]{
-    return this.products;
+  public getProductos(): Observable <Producto[]>{
+    return this.firestore.collection('Productos').snapshotChanges().pipe(
+      map(actions=>{
+        return actions.map(a=>{
+          console.log(a);
+          const data = a.payload.doc.data() as Producto;
+          console.log(data);
+          const id = a.payload.doc.id;
+          return {id, ...data}
+        });
+      })
+    );
+  }
+
+  public getCarrito():Observable <Producto[]>{
+    return this.firestore.collection('Carrito').snapshotChanges().pipe(
+      map(actions=>{
+        return actions.map(a=>{
+          console.log(a);
+          const data = a.payload.doc.data() as Producto;
+          console.log(data);
+          const id = a.payload.doc.id;
+          return {id, ...data}
+        });
+      })
+    );
   }
 
   public addProducto(producto: Producto){
-    this.products.push(producto);
-  }
-
-  public removeProducto(pos: number){
-    this.products.splice(pos, 1);
+    this.firestore.collection('Productos').add(producto);
   }
 
   public addProductoCarrito(producto: Producto):number{
-    this.carrito.push(producto);
     this.total = this.total + producto.precio;
+    this.firestore.collection('Carrito').add(producto);
     return this.total;
   }
 
-  public removeProductoCarrito(index: number): number{
-    this.total =  this.total - this.carrito[index].precio;
-    this.carrito.splice(index, 1);
-    return this.total;
+  public removeProducto(id: string){
+    this.firestore.collection('Productos').doc(id).delete();
   }
-
-  public getCarrito(): Producto[]{
-    return this.carrito;
+/*
+  public removeProductoCarrito(id:string){
+    //let index: number;
+    //this.total =  this.total - this.carrito[index].precio;
+    this.firestore.collection('Carrito').doc(id).delete();
+    //return this.total;
+  }*/
+  public removeProductoCarrito(id: string){
+    this.firestore.collection('Carrito').doc(id).delete();
   }
-
   public getTotal(): number{
     return this.total;
   }
 
-  public getProductoById (id: string): Producto{
-    let item: Producto;
-    item = this.products.find(
-      (product)=> { 
-        return product.id === id;
-      }
-    );
-    return item;
+  public getProductoById (id: string){
+    let result = this.firestore.collection('Productos').doc(id).valueChanges();
+    return result;
   }
 
 }

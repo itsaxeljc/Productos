@@ -3,5 +3,5 @@ export class Producto {
     nombre: string;
     description: string;
     precio: number;
-    id: string;
+    id?: string;
 }

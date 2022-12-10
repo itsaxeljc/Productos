@@ -1,6 +1,6 @@
+import { ProductoService } from './../services/producto.service';
 import { Component } from '@angular/core';
 import { Producto } from "../models/producto";
-import { ProductoService } from "../services/producto.service";
 import { AlertController } from '@ionic/angular';
 
 //Routes
@@ -18,10 +18,13 @@ export class HomePage {
 
   constructor(private productoService: ProductoService, private router: Router,
     private alertController: AlertController) {
-    this.productos =  this.productoService.getProductos();
+    this.productoService.getProductos().subscribe(res=>{
+      this.productos = res;
+      console.log(this.productos);
+    });
   }
 
-  public async removeProducto(pos: number){
+  public async removeProducto(id: string){
 
     const alert = await this.alertController.create({
       header: 'ALERTA',
@@ -40,8 +43,7 @@ export class HomePage {
           role: 'confirm',
           handler: () => {
             
-            this.productoService.removeProducto(pos);
-            this.productos = this.productoService.getProductos();
+            this.productoService.removeProducto(id);  
           }
         }
       ]
@@ -62,8 +64,7 @@ export class HomePage {
   }
 
   public addProducto(){
-    this.productoService.addProducto(this.producto);
-    this.productos = this.productoService.getProductos();
+    this.productoService.addProducto(this.producto)
   }
 
   public async addProductoCarrito(producto: Producto){
@@ -140,23 +141,16 @@ export class HomePage {
       {
         text: 'Aceptar',
         handler: (alertData) => {
-          if(alertData.foto == "" || alertData.description == "" || alertData.precio == ""){
-            this.error();
-          } else {
-            let i = this.productos.length+1;
-            this.producto = {
-              foto: alertData.foto,
-              nombre: alertData.description,
-              description: alertData.description,
-              precio: parseFloat(alertData.precio),
-              id: i.toString(),
-            }
-            this.productoService.addProducto(this.producto)
+          this.producto = {
+            foto: alertData.foto,
+            nombre: alertData.description,
+            description: alertData.description,
+            precio: parseFloat(alertData.precio),
           }
+          this.productoService.addProducto(this.producto)
         }
       }],
     });
-
     await alert.present();
   }
 }

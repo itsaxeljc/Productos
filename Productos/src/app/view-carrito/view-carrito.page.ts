@@ -1,10 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { Producto } from '../models/producto';
-import { ProductoService } from '../services/producto.service';
 import { AlertController } from '@ionic/angular';
-
+import { ProductoService } from '../services/producto.service';
 //Routes
-import { Router } from '@angular/router'; 
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-view-carrito',
@@ -16,17 +15,31 @@ export class ViewCarritoPage implements OnInit {
   public productos: Producto[];
   public producto: Producto;
   public total: number;
+  private carrito: Producto[];
 
-  constructor(private productoService: ProductoService,  private router: Router,
-    private alertController:AlertController ) { 
+  constructor(private productoService: ProductoService, private router: Router,
+    private alertController: AlertController) {
+    this.productoService.getCarrito().subscribe(res => {
+      this.productos = res;
+      this.carrito = [];
+      this.total = 0;
+      console.log(this.producto);
+      this.productos.forEach(i => this.total+=(i.precio));
+    });
+    //this.total = this.productoService.getTotal();
   }
 
   ngOnInit() {
-    this.productos = this.productoService.getCarrito();
-    this.total = this.productoService.getTotal();
   }
 
-  public async removeProducto(pos: number){
+  public removeProducto(id: string) {
+    this.productoService.removeProductoCarrito(id);
+  }
+  public getTotal(producto: Producto): number{
+    this.total = this.total + producto.precio;
+    return this.total;
+  }
+  /*public async removeProducto(id:string){
     
     const alert = await this.alertController.create({
       header: 'ALERTA',
@@ -45,8 +58,8 @@ export class ViewCarritoPage implements OnInit {
           role: 'confirm',
           handler: () => {
             
-            this.total = this.productoService.removeProductoCarrito(pos);
-            this.productos = this.productoService.getCarrito();
+            this.productoService.removeProductoCarrito(id);
+            
             
           }
         }
@@ -55,6 +68,6 @@ export class ViewCarritoPage implements OnInit {
 
     await alert.present();
 
-  }
+  }*/
 
 }

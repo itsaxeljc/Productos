@@ -14,13 +14,22 @@ export class ViewProductPage implements OnInit {
 
   public producto: Producto;
 
-  constructor(private productoService: ProductoService, private aroute: ActivatedRoute) { }
+  constructor(private productoService: ProductoService, private aroute: ActivatedRoute) {
+    this.producto = {
+      foto: "",
+      nombre: "",
+      description: "",
+      precio: 0
+    }
+  }
 
   ngOnInit() {
-    this.aroute.queryParams.subscribe(
-      (params) => {
-        this.producto = this.productoService.getProductoById(params.id);
-      }
+    this.aroute.queryParams.subscribe((params) => {
+      this.productoService.getProductoById(params.id).subscribe(item => {
+        console.log(item);
+        this.producto = item as Producto;
+      });
+    }
     );
   }
 
